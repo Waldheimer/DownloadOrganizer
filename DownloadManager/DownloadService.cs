@@ -51,7 +51,7 @@
                 {
                     _logger.LogError(ex, ex.Message);
                 }
-                await Task.Delay(1000*60*60, stoppingToken);
+                await Task.Delay(1000*60, stoppingToken);
             }
         }
 
