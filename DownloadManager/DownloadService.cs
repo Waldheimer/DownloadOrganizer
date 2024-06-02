@@ -10,32 +10,36 @@
         private readonly string documentExtensions = ".pdf.md.doc.docx.xls.xlsx.ppt.pptx.vsd.vsdx.odt.odp.ods.txt.log";
         private readonly string executableExtensions = ".exe.iso.msi.zip.rar.7z.gz.tar.vsix";
 
+        private string DLFolder;
+
         public DownloadService(ILogger<DownloadService> logger)
         {
-            _logger = logger; 
+            _logger = logger;
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables().Build();
             var urls = _configuration.GetRequiredSection("FolderPaths");
             videoUrl = urls.GetValue<string>("Vids")!;
             docsUrl = urls.GetValue<string>("Docs")!;
             exeUrl = urls.GetValue<string>("Exes")!;
+            DLFolder = "C:\\Users\\whm20\\Downloads";
+            // Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads" || 
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while(!stoppingToken.IsCancellationRequested)
+            // System.Console.WriteLine(DLFolder);
+            while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation($"Execution startet : {DateTime.Now}");
                 try
                 {
-                    string dlFolder = Environment.GetEnvironmentVariable("USERPROFILE") + @"\Downloads";
-                    DirectoryInfo directoryInfo = new DirectoryInfo(dlFolder);
+                    DirectoryInfo directoryInfo = new DirectoryInfo(DLFolder);
                     foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles().Where(x => mediaExtensions.Contains(x.Extension)))
                     {
                         fileInfo.MoveTo($"{videoUrl}\\{fileInfo.Name}");
                         _logger.LogInformation($"{fileInfo.Name} moved to {videoUrl}");
                     }
-                    foreach(FileInfo fileInfo in directoryInfo.EnumerateFiles().Where(x => documentExtensions.Contains(x.Extension)))
+                    foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles().Where(x => documentExtensions.Contains(x.Extension)))
                     {
                         fileInfo.MoveTo($"{docsUrl}\\{fileInfo.Name}");
                         _logger.LogInformation($"{fileInfo.Name} moved to {docsUrl}");
@@ -51,7 +55,7 @@
                 {
                     _logger.LogError(ex, ex.Message);
                 }
-                await Task.Delay(1000*60, stoppingToken);
+                await Task.Delay(1000 * 60, stoppingToken);
             }
         }
 
