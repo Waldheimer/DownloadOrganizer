@@ -22,15 +22,12 @@
             docsUrl = urls.GetValue<string>("Docs")!;
             exeUrl = urls.GetValue<string>("Exes")!;
             DLFolder = "C:\\Users\\whm20\\Downloads";
-            // Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads" || 
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // System.Console.WriteLine(DLFolder);
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation($"Execution startet : {DateTime.Now}");
                 try
                 {
                     DirectoryInfo directoryInfo = new DirectoryInfo(DLFolder);
@@ -49,13 +46,12 @@
                         fileInfo.MoveTo($"{exeUrl}\\{fileInfo.Name}");
                         _logger.LogInformation($"{fileInfo.Name} moved to {exeUrl}");
                     }
-                    _logger.LogInformation("No more moveable Files found !!!");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, ex.Message);
                 }
-                await Task.Delay(1000 * 60, stoppingToken);
+                await Task.Delay(1000 * 60 * 5, stoppingToken);
             }
         }
 
